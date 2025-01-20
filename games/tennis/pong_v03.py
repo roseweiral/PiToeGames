@@ -25,7 +25,7 @@ ball_speed_x, ball_speed_y = 4, 4
 
 # FSR settings
 FSR_PIN = 4  # GPIO Pin for FSR
-fsr_threshold = 500  # Adjust this value to your FSR's sensitivity
+fsr_threshold = 1  # Adjust this value to your FSR's sensitivity
 
 # Initialize positions
 player1 = pygame.Rect(50, (HEIGHT - PADDLE_HEIGHT) // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
@@ -56,20 +56,35 @@ while True:
             pygame.quit()
             sys.exit()
 
-    # Read FSR value (you will need to change this if you are using an analog-to-digital converter)
+    # Read FSR value
     fsr_value = GPIO.input(FSR_PIN)
 
+    # Logging FSR event
+    if fsr_value == fsr_threshold:
+        print("FSR event detected: Threshold exceeded")
+    
+    # Movement control for player 1 (paddle control with Q & S keys)
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_q] and player1.top > 0:
+        player1.y -= paddle_speed
+        print("Player 1 moves up (Q key pressed)")
+    if keys[pygame.K_s] and player1.bottom < HEIGHT:
+        player1.y += paddle_speed
+        print("Player 1 moves down (S key pressed)")
+
     # If FSR is pressed (threshold-based, simulate pressing the "up arrow" key)
-    if fsr_value > fsr_threshold:  # Adjust threshold based on your sensor's response
+    if fsr_value == fsr_threshold:  # Adjust threshold based on your sensor's response
         if player1.top > 0:  # Move paddle up if not at the top
             player1.y -= paddle_speed
+            print("Player 1 moves up (FSR event detected)")
 
     # Movement control for player 2 (paddle control with arrow keys)
-    keys = pygame.key.get_pressed()
     if keys[pygame.K_UP] and player2.top > 0:
         player2.y -= paddle_speed
+        print("Player 2 moves up (Up arrow key pressed)")
     if keys[pygame.K_DOWN] and player2.bottom < HEIGHT:
         player2.y += paddle_speed
+        print("Player 2 moves down (Down arrow key pressed)")
 
     # Ball movement
     ball.x += ball_speed_x
@@ -88,10 +103,12 @@ while True:
         player2_score += 1
         ball_speed_x, ball_speed_y = reset_ball()  # reset ball
         pygame.time.delay(500)  # Short delay before next round
+        print("Player 2 scores!")
     if ball.right >= WIDTH:  # Player 1 scores
         player1_score += 1
         ball_speed_x, ball_speed_y = reset_ball()  # reset ball
         pygame.time.delay(500)  # Short delay before next round
+        print("Player 1 scores!")
 
     # Drawing the game
     screen.fill(BLACK)
