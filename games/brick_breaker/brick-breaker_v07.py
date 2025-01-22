@@ -162,7 +162,6 @@ def main_menu():
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
-
 #==============================================================================#
 # Ball and Paddle Logic
 #==============================================================================#
@@ -188,6 +187,21 @@ def handle_ball_paddle_collision():
                 ball_speed_y = -abs(ball_speed_y)
         else:
             ball_speed_y = -abs(ball_speed_y)
+
+def enforce_minimum_speed():
+    global ball_speed_x, ball_speed_y
+
+    # Ensure the ball always has a non-zero vertical speed
+    if ball_speed_y == 0:
+        ball_speed_y = random.choice([-4, 4])  # Randomize vertical speed if it's zero
+
+    # Ensure the vertical speed is always non-zero (to avoid horizontal-only movement)
+    if abs(ball_speed_y) < 1:
+        ball_speed_y = random.choice([-4, 4])
+
+    # Ensure that horizontal speed also has a meaningful value
+    if abs(ball_speed_x) < 1:
+        ball_speed_x = random.choice([-4, 4])
 
 #==============================================================================#
 # Main Game Loop
@@ -226,6 +240,9 @@ while True:
     # Ball movement
     ball.x += ball_speed_x
     ball.y += ball_speed_y
+
+    # Enforce non-zero vertical speed
+    enforce_minimum_speed()
 
     # Ball collision with walls
     if ball.left <= 0 or ball.right >= WIDTH:
@@ -272,3 +289,4 @@ while True:
     pygame.display.flip()
 
     clock.tick(60)  # Maintain 60 FPS
+
