@@ -287,6 +287,7 @@ while True:
     screen.blit(lives_text, (WIDTH - 150, 10))
 
     pygame.display.flip()
+    
 
     clock.tick(60)  # Maintain 60 FPS
 
