@@ -215,6 +215,46 @@ def enforce_minimum_speed():
         ball_speed_x = random.choice([-4, 4])
 
 #==============================================================================#
+# Bricks Setup - Rainbow Wall
+#==============================================================================#
+
+# Define the colors of the rainbow (you can adjust the number of colors to suit your wall)
+rainbow_colors = [
+    (255, 0, 0),    # Red
+    (255, 127, 0),  # Orange
+    (255, 255, 0),  # Yellow
+    (0, 255, 0),    # Green
+    (0, 0, 255),    # Blue
+    (75, 0, 130),   # Indigo
+    (238, 130, 238) # Violet
+]
+
+# Bricks setup for a rainbow-colored wall
+brick_width = 80
+brick_height = 20
+bricks = []
+
+# Create bricks in a grid, with each brick having a different rainbow color
+for row in range(5):  # Number of rows of bricks
+    for col in range(10):  # Number of columns of bricks
+        x = col * brick_width
+        y = row * brick_height + 50  # Add some space from the top
+        color = rainbow_colors[(row * 10 + col) % len(rainbow_colors)]  # Cycle through rainbow colors
+        bricks.append((pygame.Rect(x, y, brick_width, brick_height), color))
+
+# Ball reset function
+def reset_ball():
+    global ball_speed_x, ball_speed_y, ball
+    # Reset ball to the middle of the paddle
+    ball.x = paddle.x + paddle.width // 2 - ball.width // 2
+    ball.y = paddle.y - ball.height  # Position it just above the paddle
+
+    # Randomize ball speed at a 45-degree angle
+    ball_speed_x = random.choice([-2, 2]) * ball_speed_multiplier
+    ball_speed_y = -2 * ball_speed_multiplier  # Always upwards
+    print(f"Ball reset: speed X={ball_speed_x}, Y={ball_speed_y}")
+
+#==============================================================================#
 # Main Game Loop
 #==============================================================================#
 
@@ -229,6 +269,11 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                # Escape key pressed, break to menu (you can implement this menu logic)
+                print("Escape pressed. Returning to menu...")
+                return_to_menu()  # Implement the return_to_menu function as needed
 
     # Read FSR values
     fsr_value_left = read_adc(FSR_CHANNEL_LEFT)
@@ -239,6 +284,15 @@ while True:
         print(f"FSR LEFT event detected: Value = {fsr_value_left}")
     if fsr_value_right > FSR_THRESHOLD:
         print(f"FSR RIGHT event detected: Value = {fsr_value_right}")
+    
+    # Event handling for keyboard
+    keys = pygame.key.get_pressed()  # Get the state of all keys
+    if keys[pygame.K_LEFT] and paddle.left > 0:  # Left arrow key
+        paddle.x -= PADDLE_SPEED
+        print("Paddle moves left (keyboard LEFT detected)")
+    if keys[pygame.K_RIGHT] and paddle.right < WIDTH:  # Right arrow key
+        paddle.x += PADDLE_SPEED
+        print("Paddle moves right (keyboard RIGHT detected)")
 
     # Movement control for fsr player (paddle control with FSRs)
     if fsr_value_left > FSR_THRESHOLD and paddle.left > 0:
@@ -267,12 +321,11 @@ while True:
     handle_ball_paddle_collision()
 
     # Ball collision with bricks
-    for brick in bricks[:]:
-        brick_rect = brick
-        if ball.colliderect(brick_rect):
+    for brick, color in bricks:
+        if ball.colliderect(brick):
             media.brick_hit_sound()  # Play brick hit sound
             ball_speed_y = -ball_speed_y
-            bricks.remove(brick)
+            bricks.remove((brick, color))  # Remove the brick from the list
             score += 10
 
     # Ball out of bounds
@@ -288,9 +341,11 @@ while True:
     screen.fill(BLACK)
     pygame.draw.rect(screen, WHITE, paddle)
     pygame.draw.ellipse(screen, WHITE, ball)
-    for brick in bricks:
-        pygame.draw.rect(screen, WHITE, brick)
-    
+    # Draw bricks with their assigned colors
+    for brick, color in bricks:
+        pygame.draw.rect(screen, color, brick)
+
+    # Draw the score and lives
     score_text = font.render(f"Score: {score}", True, WHITE)
     screen.blit(score_text, (10, 10))
 
