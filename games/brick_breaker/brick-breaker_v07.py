@@ -1,7 +1,40 @@
 import pygame
 import sys
 import random
-import spidev
+
+#==============================================================================#
+# FSR Logic
+#==============================================================================#
+
+FSR_CHANNEL_LEFT = 0  # FSR connected to CH0 for left movement
+FSR_CHANNEL_RIGHT = 1  # FSR connected to CH1 for right movement
+FSR_THRESHOLD = 100  # Sensitivity threshold for FSRs
+
+# Try to import spidev for the Raspberry Pi; simulate FSR input otherwise
+fsr_simulation_mode = False
+
+try:
+    import spidev
+    spi = spidev.SpiDev()
+    spi.open(0, 0)
+    spi.max_speed_hz = 1350000
+
+    def read_adc(channel):
+        """Read data from the specified ADC channel."""
+        if channel < 0 or channel > 7:
+            return -1
+        adc = spi.xfer2([1, (8 + channel) << 4, 0])
+        data = ((adc[1] & 3) << 8) + adc[2]
+        return data
+except (ImportError, FileNotFoundError):
+    print("spidev not found. Running in simulation mode.")
+    fsr_simulation_mode = True
+
+    def read_adc(channel):
+        """Simulate ADC readings for testing on non-Raspberry Pi systems."""
+        return random.randint(0, 1023)  # Simulated ADC value
+
+
 
 #==============================================================================#
 # Configuration and Constants
@@ -39,28 +72,6 @@ class media:
     @staticmethod
     def game_over_sound():
         print("Game over sound")
-
-#==============================================================================#
-# FSR Logic
-#==============================================================================#
-
-# Define the channels and threshold for FSR readings
-FSR_CHANNEL_LEFT = 0  # FSR connected to CH0 for left movement
-FSR_CHANNEL_RIGHT = 1  # FSR connected to CH1 for right movement
-FSR_THRESHOLD = 100  # Sensitivity threshold for FSRs
-
-# Set up SPI for MCP3008 (used for reading FSRs)
-spi = spidev.SpiDev()
-spi.open(0, 0)
-spi.max_speed_hz = 1350000
-
-def read_adc(channel):
-    """Read data from the specified ADC channel."""
-    if channel < 0 or channel > 7:
-        return -1
-    adc = spi.xfer2([1, (8 + channel) << 4, 0])
-    data = ((adc[1] & 3) << 8) + adc[2]
-    return data
 
 #==============================================================================#
 # Game Setup
