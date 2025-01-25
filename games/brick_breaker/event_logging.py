@@ -1,93 +1,45 @@
-import time
-import statistics
-from supabase import create_client, Client
+from datetime import datetime
+from supabase import create_client
 
-# Initialize Supabase client
-url = "https://ujbnbqdnhljivwhnufem.supabase.co"
-key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqYm5icWRuaGxqaXZ3aG51ZmVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc4MTMzMzAsImV4cCI6MjA1MzM4OTMzMH0.L5dRXYbXivEmOFOe9En-KJB8emRUxHZt5BkzzNhfiG4"
-supabase: Client = create_client(url, key)
+# Supabase configuration (replace these with your own credentials)
+SUPABASE_URL = "https://ujbnbqdnhljivwhnufem.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqYm5icWRuaGxqaXZ3aG51ZmVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc4MTMzMzAsImV4cCI6MjA1MzM4OTMzMH0.L5dRXYbXivEmOFOe9En-KJB8emRUxHZt5BkzzNhfiG4"
 
-try:
-    response = supabase.table("fsr_events").select("*").limit(1).execute()
-    print("Supabase test query succeeded:", response.data)
-except Exception as e:
-    print("Error connecting to Supabase:", e)
+# Create a Supabase client
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-
-# FSR event data structure
-class FSRData:
-    def __init__(self, fsr_id):
-        self.fsr_id = fsr_id
-        self.accumulated_values = []  # Store all values above threshold
-        self.threshold = 100  # Set threshold value for press detection
-        self.pressed = False
-        self.press_start_time = None
-
-    def update(self, fsr_value):
-        """
-        Update the FSR data based on the current FSR value.
-        If the value is above the threshold, accumulate it.
-        """
-        current_time = time.time()
-
-        if fsr_value > self.threshold and not self.pressed:
-            # Start accumulating values when above threshold
-            self.pressed = True
-            self.accumulated_values = [fsr_value]  # Start accumulating values
-        elif fsr_value > self.threshold and self.pressed:
-            # Continue accumulating values while above threshold
-            self.accumulated_values.append(fsr_value)
-        elif fsr_value < self.threshold and self.pressed:
-            # Once below the threshold, calculate the average of the accumulated values
-            if len(self.accumulated_values) > 0:
-                avg_value = sum(self.accumulated_values) / len(self.accumulated_values)
-                self.accumulated_values = []  # Reset for the next press
-                self.pressed = False
-                return avg_value
-        return None  # No value to return if not under the threshold
-
-    def reset(self):
-        self.accumulated_values = []
-
-# Function to send data to Supabase
-def log_fsr_to_supabase(fsr_data: FSRData):
-    avg_value = fsr_data.update(fsr_value=600)  # Pass an example value to simulate
-    if avg_value is not None:
+# Function to log an FSR event to Supabase
+def log_fsr_event(fsr_id, fsr_value):
+    """
+    Log a single FSR event to Supabase.
+    
+    Parameters:
+        fsr_id (str): Identifier for the FSR (e.g., 'left' or 'right').
+        fsr_value (float): Average pressure value to log.
+    """
+    try:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         data = {
-            "fsr_id": fsr_data.fsr_id,
-            "average_pressure": avg_value,
-            "timestamp": time.strftime('%Y-%m-%d %H:%M:%S')
+            "fsr_id": fsr_id,
+            "average_pressure": fsr_value,
+            "timestamp": timestamp
         }
-        # Send to Supabase
         response = supabase.table("fsr_events").insert(data).execute()
-        print(f"Logged FSR {fsr_data.fsr_id} with avg value: {avg_value} to Supabase.")
-        return response
-    return None
+        print(f"Logged to Supabase: {data}")
+    except Exception as e:
+        print(f"Error logging to Supabase: {e}")
 
-# Example usage
-if __name__ == "__main__":
-    # Example FSR data tracking for FSR Left and Right
-    fsr_left = FSRData(fsr_id="left")
-    fsr_right = FSRData(fsr_id="right")
-    
-    for _ in range(10):  # Simulate 10 events with varying values
-        value_left = 600 if _ % 2 == 0 else 40  # Alternate between above and below threshold
-        value_right = 700 if _ % 2 == 0 else 30
-            
-        avg_left = fsr_left.update(value_left)
-        avg_right = fsr_right.update(value_right)
+# Function to handle a batch of FSR data and log the average
+def handle_fsr_data(fsr_id, values):
+    """
+    Calculate the average pressure for a batch of FSR readings and log it.
 
-        print(f"Left FSR avg: {avg_left}, Right FSR avg: {avg_right}")  # Debug output
-        
-        if avg_left is not None:
-            print("Logging left FSR to Supabase...")
-            log_fsr_to_supabase(fsr_left)
-        
-        if avg_right is not None:
-            print("Logging right FSR to Supabase...")
-            log_fsr_to_supabase(fsr_right)
-
-    
-    # Reset data for next session
-    fsr_left.reset()
-    fsr_right.reset()
+    Parameters:
+        fsr_id (str): Identifier for the FSR (e.g., 'left' or 'right').
+        values (list): List of pressure readings.
+    """
+    if values:
+        avg_pressure = sum(values) / len(values)
+        log_fsr_event(fsr_id, avg_pressure)
+    else:
+        print(f"No data to log for {fsr_id}.")

@@ -42,8 +42,9 @@ def send_sample_data():
     is_right_above = False
 
     for i in range(500):  # Simulate 50 entries
-        fsr_value_left = 80 + (i % 50)  # Simulated oscillating values for left
+        fsr_value_left = 90 + (i % 50)  # Simulated oscillating values for left
         fsr_value_right = 70 + (i % 50)  # Simulated oscillating values for right
+        print(fsr_value_left, fsr_value_right)
 
         # Handle left FSR
         if fsr_value_left > THRESHOLD:
@@ -63,7 +64,7 @@ def send_sample_data():
             right_values = []
             is_right_above = False
 
-        time.sleep(0.1)  # Small delay between readings
+        #time.sleep(0.1)  # Small delay between readings
 
     # Final check to send any remaining data
     print("Finalizing remaining data...")
