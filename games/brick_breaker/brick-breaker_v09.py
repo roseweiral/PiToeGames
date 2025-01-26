@@ -34,7 +34,7 @@ except (ImportError, FileNotFoundError):
 
     def read_adc(channel):
         """Simulate ADC readings for testing on non-Raspberry Pi systems."""
-        return random.randint(0, 1023)  # Simulated ADC value
+        return random.randint(0, 200)  # Simulated ADC value
 
 
 #==============================================================================#
@@ -283,13 +283,13 @@ while True:
     fsr_value_right = read_adc(FSR_CHANNEL_RIGHT)
 
     # Logging FSR events
-    if fsr_value_left > FSR_THRESHOLD:
-        print(f"FSR LEFT event detected: Value = {fsr_value_left}")
-        handle_fsr_data(channel="LEFT", value=fsr_value_left, action="PRESS")
+#    if fsr_value_left <> FSR_THRESHOLD:
+    print(f"FSR LEFT event detected: Value = {fsr_value_left}")
+    handle_fsr_data(fsr_id="left", values=fsr_value_left)
 
-    if fsr_value_right > FSR_THRESHOLD:
-        print(f"FSR RIGHT event detected: Value = {fsr_value_right}")
-        handle_fsr_data(channel="RIGHT", value=fsr_value_right, action="PRESS")
+#    if fsr_value_right <> FSR_THRESHOLD:
+    print(f"FSR RIGHT event detected: Value = {fsr_value_right}")
+    handle_fsr_data(fsr_id="right", values=fsr_value_right)
     
     # Event handling for keyboard
     keys = pygame.key.get_pressed()  # Get the state of all keys
