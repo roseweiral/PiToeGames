@@ -8,9 +8,6 @@ SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 # Create a Supabase client
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Threshold for logging
-THRESHOLD = 100
-
 # Function to log an FSR event to Supabase
 def log_fsr_event(fsr_id, fsr_value):
     """
@@ -32,12 +29,10 @@ def log_fsr_event(fsr_id, fsr_value):
     except Exception as e:
         print(f"Error logging to Supabase: {e}")
 
-
 # Function to handle a batch of FSR data and log the average
 def handle_fsr_data(fsr_id, values):
     """
-    Calculate the average pressure for a batch of FSR readings and log it
-    if it exceeds the threshold.
+    Calculate the average pressure for a batch of FSR readings and log it.
 
     Parameters:
         fsr_id (str): Identifier for the FSR (e.g., 'left' or 'right').
@@ -45,9 +40,6 @@ def handle_fsr_data(fsr_id, values):
     """
     if values:
         avg_pressure = sum(values) / len(values)
-        if avg_pressure > THRESHOLD:  # Only log if above the threshold
-            log_fsr_event(fsr_id, avg_pressure)
-        else:
-            print(f"Average pressure {avg_pressure} for {fsr_id} below threshold. Not logged.")
+        log_fsr_event(fsr_id, avg_pressure)
     else:
         print(f"No data to log for {fsr_id}.")
