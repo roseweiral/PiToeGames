@@ -72,10 +72,10 @@ pygame.mixer.init()
 class media:
     # Load the sound files
     paddle_hit_sound = pygame.mixer.Sound("sounds/ding.wav")
-    wall_hit_sound = pygame.mixer.Sound()
+    wall_hit_sound = pygame.mixer.Sound("sounds/ding.wav")
     brick_hit_sound = pygame.mixer.Sound("sounds/ding.wav")
-    life_lost_sound = pygame.mixer.Sound()
-    game_over_sound = pygame.mixer.Sound()
+    life_lost_sound = pygame.mixer.Sound("sounds/chord.wav")
+    game_over_sound = pygame.mixer.Sound("sounds/tada.wav")
 
 
 #==============================================================================#
@@ -197,7 +197,7 @@ def main_menu():
 def handle_ball_paddle_collision():
     global ball_speed_x, ball_speed_y
     if ball.colliderect(paddle):
-        media.paddle_hit_sound_file()  # Play paddle hit sound
+        media.paddle_hit_sound.play()  # Play paddle hit sound
         if dynamic_bat:
             zone_width = PADDLE_WIDTH / 10
             impact_zone = int((ball.x - paddle.x) // zone_width) + 1
@@ -306,10 +306,10 @@ while True:
 
     # Ball collision with walls
     if ball.left <= 0 or ball.right >= WIDTH:
-        #media.wall_hit_sound_file()  # Play wall hit sound
+        media.wall_hit_sound.play()  # Play wall hit sound
         ball_speed_x = -ball_speed_x
     if ball.top <= 0:
-        #media.wall_hit_sound_file()
+        media.wall_hit_sound.play()
         ball_speed_y = -ball_speed_y
 
     # Ball collision with paddle
@@ -318,7 +318,7 @@ while True:
     # Ball collision with bricks
     for brick, brick_color in bricks:
         if ball.colliderect(brick):
-            media.brick_hit_sound()  # Play brick hit sound
+            media.brick_hit_sound.play()  # Play brick hit sound
             ball_speed_y = -ball_speed_y
             bricks.remove((brick, brick_color))  # Remove the brick from the list
             score += 10
@@ -326,11 +326,11 @@ while True:
 
     # Ball out of bounds
     if ball.bottom >= HEIGHT:
-        media.life_lost_sound_file()  # Play life lost sound
+        media.life_lost_sound.play()  # Play life lost sound
         lives -= 1
         reset_ball()
         if lives == 0:
-            media.game_over_sound_file()  # Play game over sound
+            media.game_over_sound.play()  # Play game over sound
 
     # Draw everything
     screen.fill(BLACK)
