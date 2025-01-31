@@ -251,6 +251,9 @@ def reset_ball():
 # Main Game Loop
 #==============================================================================#
 
+# Check for /nolog parameter
+nolog = '/nolog' in sys.argv
+
 clock = pygame.time.Clock()
 ball_speed_multiplier = 1
 
