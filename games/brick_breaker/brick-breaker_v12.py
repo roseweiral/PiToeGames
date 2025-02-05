@@ -68,7 +68,7 @@ try:
 
         # Print data from both sensors
         print(f"Gyro X={gyro_x1:.2f}, Y={gyro_y1:.2f}, Z={gyro_z1:.2f},X={gyro_x2:.2f}, Y={gyro_y2:.2f}, Z={gyro_z2:.2f}")
-        time.sleep(1)
+        #time.sleep(1)
 
 except (ImportError, FileNotFoundError):
     print("ICM Not Found. Running in simulation mode.")
