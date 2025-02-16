@@ -55,6 +55,7 @@ def handle_fsr_data(fsr_id, values):
         return
 
     fsr_state = accumulator[fsr_id]
+    
     print(f"FSR {fsr_id} values: {values}")
 
     if values > THRESHOLD:

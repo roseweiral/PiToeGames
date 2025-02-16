@@ -30,6 +30,12 @@ try:
             return -1
         adc = spi.xfer2([1, (8 + channel) << 4, 0])
         data = ((adc[1] & 3) << 8) + adc[2]
+
+        #==========
+        for i in range(8):
+            print(f"ADC Channel {i}: {read_adc(i)}")
+        #==========
+
         return data
 except (ImportError, FileNotFoundError):
     print("spidev not found. Running in simulation mode.")
@@ -57,6 +63,4 @@ if fsr_simulation_mode:
 def get_fsr_values():
     """Get the latest FSR values."""
     print(f"FSR values: {fsr_values}")
-    for i in range(8):
-        print(f"ADC Channel {i}: {read_adc(i)}")
     return fsr_values['left'], fsr_values['right']
