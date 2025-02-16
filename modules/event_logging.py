@@ -1,5 +1,6 @@
 from datetime import datetime
 from supabase import create_client
+import json
 
 # ANSI escape code for red font color
 RED = "\033[31m"
@@ -31,6 +32,12 @@ def log_fsr_event(fsr_id, fsr_value):
         fsr_id (str): Identifier for the FSR (e.g., 'left' or 'right').
         fsr_value (float): Average pressure value to log.
     """
+    #==================================================================
+    payload = {"fsr_id": fsr_id, "avg_pressure": avg_pressure}
+    print(f"Logging to Supabase: {json.dumps(payload, indent=2)}")  # Debugging
+    response = supabase.table("your_table_name").insert(payload).execute()
+    print(f"Supabase response: {response}")
+    #==================================================================
     try:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         data = {
@@ -42,6 +49,7 @@ def log_fsr_event(fsr_id, fsr_value):
         print(f"Logged to Supabase: {data}")
     except Exception as e:
         print(f"Error logging to Supabase: {e}")
+
 
 
 # Function to handle an individual FSR reading
