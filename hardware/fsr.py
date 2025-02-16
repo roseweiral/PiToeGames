@@ -8,6 +8,7 @@ FSR_CHANNEL_RIGHT = 1  # FSR connected to CH1 for right movement
 FSR_THRESHOLD = 100  # Sensitivity threshold for FSRs
 
 fsr_simulation_mode = False
+print(f"FSR simulation mode: {fsr_simulation_mode}")
 FSR_SIMULATION_RATE = 1.0  # Delay in seconds between simulated readings
 
 # Shared variable for storing FSR readings

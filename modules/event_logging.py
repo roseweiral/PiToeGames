@@ -42,7 +42,7 @@ def log_fsr_event(fsr_id, fsr_value):
         }
         #print(f"Logging to Supabase: {json.dumps(data, indent=2)}")
         response = supabase.table("fsr_events").insert(data).execute()
-        print(f"Logged to Supabase: {data}")
+        #print(f"Logged to Supabase: {data}")
     except Exception as e:
         print(f"Error logging to Supabase: {e}")
 
@@ -55,6 +55,7 @@ def handle_fsr_data(fsr_id, values):
         return
 
     fsr_state = accumulator[fsr_id]
+    print(f"FSR {fsr_id} values: {values}")
 
     if values > THRESHOLD:
         fsr_state["values"].append(values)
