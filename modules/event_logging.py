@@ -33,7 +33,7 @@ def log_fsr_event(fsr_id, fsr_value):
         fsr_value (float): Average pressure value to log.
     """
     #==================================================================
-    payload = {"fsr_id": fsr_id, "avg_pressure": avg_pressure}
+    payload = {"fsr_id": fsr_id, "avg_pressure": fsr_value}
     print(f"Logging to Supabase: {json.dumps(payload, indent=2)}")  # Debugging
     response = supabase.table("your_table_name").insert(payload).execute()
     print(f"Supabase response: {response}")
