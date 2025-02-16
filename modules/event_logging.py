@@ -48,11 +48,7 @@ def log_fsr_event(fsr_id, fsr_value):
 def handle_fsr_data(fsr_id, values):
     
     if not values:
-        print(f"No data to log for {fsr_id}.")
         return
-
-
-    #print(f"{RED}Received {fsr_id} reading: {values}{RESET}")
 
     fsr_state = accumulator[fsr_id]
 
@@ -68,6 +64,4 @@ def handle_fsr_data(fsr_id, values):
             # Reset the accumulator for this sensor
             fsr_state["values"] = []
             fsr_state["above_threshold"] = False
-        else:
-            #print(f"Reading {values} for {fsr_id} is below threshold and not part of any ongoing sequence.")
-            print()
+

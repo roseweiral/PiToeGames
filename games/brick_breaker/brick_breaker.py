@@ -8,6 +8,8 @@ from modules.event_logging import handle_fsr_data
 from hardware.fsr import get_fsr_values, read_adc, FSR_CHANNEL_LEFT, FSR_CHANNEL_RIGHT, FSR_THRESHOLD
 from modules.bb_media import Media, play_background_music, stop_background_music
 
+
+
 #==============================================================================#
 # Global Variables  
 #==============================================================================#
@@ -20,38 +22,6 @@ paddle = None
 score = None
 lives = None
 dynamic_bat = None
-
-#==============================================================================#
-# Configuration and Constants
-#==============================================================================#
-color = [
-    (255, 0, 0),    # Red
-    (255, 127, 0),  # Orange
-    (255, 255, 0),  # Yellow
-    (0, 255, 0),    # Green
-    (0, 0, 255),    # Blue
-    (75, 0, 130),   # Indigo
-    (238, 130, 238) # Violet
-]
-
-
-#==============================================================================#
-# Configuration and Constants
-#==============================================================================#
-
-WIDTH, HEIGHT = 800, 600
-PADDLE_WIDTH, PADDLE_HEIGHT = 100, 15
-BALL_RADIUS = 10
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-PADDLE_SPEED = 5
-
-# Create screen, clock, and fonts
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Brick Breaker')
-
-pygame.font.init()
-font = pygame.font.Font(None, 36)
 
 #==============================================================================#
 # Game Setup
@@ -96,6 +66,34 @@ def bb_game_setup():
     # Initialize ball speed multiplier
     ball_speed_multiplier = 1
 
+
+#==============================================================================#
+# Configuration and Constants
+#==============================================================================#
+color = [
+    (255, 0, 0),    # Red
+    (255, 127, 0),  # Orange
+    (255, 255, 0),  # Yellow
+    (0, 255, 0),    # Green
+    (0, 0, 255),    # Blue
+    (75, 0, 130),   # Indigo
+    (238, 130, 238) # Violet
+]
+
+WIDTH, HEIGHT = 800, 600
+PADDLE_WIDTH, PADDLE_HEIGHT = 100, 15
+BALL_RADIUS = 10
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+PADDLE_SPEED = 5
+
+# Create screen, clock, and fonts
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption('Brick Breaker')
+
+pygame.font.init()
+font = pygame.font.Font(None, 36)
+
 #==============================================================================#
 # Settings Menu
 #==============================================================================#
@@ -131,7 +129,7 @@ def settings_menu():
                     dynamic_bat = not dynamic_bat
 
 #==============================================================================#
-# Main Menu
+# Main Brickbreaker Menu
 #==============================================================================#
 
 def brick_breaker_menu():
@@ -165,8 +163,9 @@ def brick_breaker_menu():
                 if event.key == pygame.K_s:
                     settings_menu()
                 if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                    from games.menu import main_menu
+                    main_menu()
+                    return
 
 #==============================================================================#
 # Ball and Paddle Logic
@@ -244,26 +243,26 @@ def start_brick_breaker():
         # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+            #    pygame.quit()
+            #    sys.exit()
+                print("Escape pressed. Returning to menu...")
+                return
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     # Escape key pressed, break to menu
                     stop_background_music()
                     print("Escape pressed. Returning to menu...")
-                    main_menu()
+                    start_brick_breaker()
 
         # Read FSR values
         fsr_value_left = read_adc(FSR_CHANNEL_LEFT)
         fsr_value_right = read_adc(FSR_CHANNEL_RIGHT)
 
         # Logging FSR events
-    #    if fsr_value_left <> FSR_THRESHOLD:
-        print(f"FSR LEFT event detected: Value = {fsr_value_left}")
+        # if fsr_value_left <> FSR_THRESHOLD:
         handle_fsr_data(fsr_id="left", values=fsr_value_left)
 
         #if fsr_value_right <> FSR_THRESHOLD:
-        print(f"FSR RIGHT event detected: Value = {fsr_value_right}")
         handle_fsr_data(fsr_id="right", values=fsr_value_right)
         
         # Event handling for keyboard
@@ -315,7 +314,7 @@ def start_brick_breaker():
             if lives == 0:
                 stop_background_music
                 Media.game_over_sound.play()  # Play game over sound
-                main_menu()  # Quit game and Return to the main menu
+                start_brick_breaker()  # Quit game and Return to the main menu
             else:
                 reset_ball()  # Only reset if the game continues
 
@@ -331,8 +330,6 @@ def start_brick_breaker():
         play_background_music()
 
         # Display score and lives
-        print(f"Score value before render: {score}")
-        print(f"Lives value before render: {lives}")
         score_text = font.render(f"Score: {score}", True, WHITE)
         lives_text = font.render(f"Lives: {lives}", True, WHITE)
         screen.blit(score_text, (10, 10))
@@ -352,7 +349,7 @@ def start_brick_breaker():
             screen.blit(text, text_rect)
             pygame.display.flip()
             sleep(5)  # Wait for 5 seconds before returning to the main menu
-            main_menu()
+            start_brick_breaker()
 
         pygame.display.flip()
 
