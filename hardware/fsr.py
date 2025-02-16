@@ -34,6 +34,7 @@ try:
 except (ImportError, FileNotFoundError):
     print("spidev not found. Running in simulation mode.")
     fsr_simulation_mode = True
+    print(f"FSR simulation mode: {fsr_simulation_mode}")
 
     def read_adc(channel):
         """Simulate ADC readings for testing on non-Raspberry Pi systems."""
@@ -44,6 +45,7 @@ def simulate_fsr():
     while True:
         fsr_values['left'] = read_adc(FSR_CHANNEL_LEFT)
         fsr_values['right'] = read_adc(FSR_CHANNEL_RIGHT)
+        print(f"Simulated FSR values: {fsr_values}")
         time.sleep(FSR_SIMULATION_RATE)  # Delay in simulation (non-blocking)
 
 # Start the simulation in a separate thread
