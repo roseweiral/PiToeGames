@@ -40,7 +40,7 @@ def log_fsr_event(fsr_id, fsr_value):
             "average_pressure": fsr_value,
             "timestamp": timestamp,
         }
-        print(f"Logging to Supabase: {json.dumps(data, indent=2)}")
+        #print(f"Logging to Supabase: {json.dumps(data, indent=2)}")
         response = supabase.table("fsr_events").insert(data).execute()
         print(f"Logged to Supabase: {data}")
     except Exception as e:
