@@ -32,12 +32,7 @@ def log_fsr_event(fsr_id, fsr_value):
         fsr_id (str): Identifier for the FSR (e.g., 'left' or 'right').
         fsr_value (float): Average pressure value to log.
     """
-    #==================================================================
-    payload = {"fsr_id": fsr_id, "avg_pressure": fsr_value}
-    print(f"Logging to Supabase: {json.dumps(payload, indent=2)}")  # Debugging
-    response = supabase.table("fsr_events").insert(payload).execute()
-    print(f"Supabase response: {response}")
-    #==================================================================
+    
     try:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         data = {
@@ -45,6 +40,7 @@ def log_fsr_event(fsr_id, fsr_value):
             "average_pressure": fsr_value,
             "timestamp": timestamp,
         }
+        print(f"Logging to Supabase: {json.dumps(data, indent=2)}")
         response = supabase.table("fsr_events").insert(data).execute()
         print(f"Logged to Supabase: {data}")
     except Exception as e:
