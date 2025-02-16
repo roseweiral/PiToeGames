@@ -46,20 +46,13 @@ def log_fsr_event(fsr_id, fsr_value):
 
 # Function to handle an individual FSR reading
 def handle_fsr_data(fsr_id, values):
-    """
-    Process an FSR reading. If the pressure is above the threshold, accumulate
-    values until it drops below the threshold, then log the average.
-
-    Parameters:
-        fsr_id (str): Identifier for the FSR (e.g., 'left' or 'right').
-        values (list): List containing a single pressure reading.
-    """
+    
     if not values:
         print(f"No data to log for {fsr_id}.")
         return
 
 
-    print(f"{RED}Received {fsr_id} reading: {values}{RESET}")
+    #print(f"{RED}Received {fsr_id} reading: {values}{RESET}")
 
     fsr_state = accumulator[fsr_id]
 
@@ -76,4 +69,5 @@ def handle_fsr_data(fsr_id, values):
             fsr_state["values"] = []
             fsr_state["above_threshold"] = False
         else:
-            print(f"Reading {values} for {fsr_id} is below threshold and not part of any ongoing sequence.")
+            #print(f"Reading {values} for {fsr_id} is below threshold and not part of any ongoing sequence.")
+            print()

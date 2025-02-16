@@ -1,5 +1,6 @@
-# fsr.py
 import random
+import time
+import threading
 
 # FSR Constants
 FSR_CHANNEL_LEFT = 0  # FSR connected to CH0 for left movement
@@ -7,6 +8,13 @@ FSR_CHANNEL_RIGHT = 1  # FSR connected to CH1 for right movement
 FSR_THRESHOLD = 100  # Sensitivity threshold for FSRs
 
 fsr_simulation_mode = False
+FSR_SIMULATION_RATE = 1.0  # Delay in seconds between simulated readings
+
+# Shared variable for storing FSR readings
+fsr_values = {
+    'left': 0,
+    'right': 0
+}
 
 # Try to import spidev for the Raspberry Pi; simulate FSR input otherwise
 try:
@@ -28,11 +36,21 @@ except (ImportError, FileNotFoundError):
 
     def read_adc(channel):
         """Simulate ADC readings for testing on non-Raspberry Pi systems."""
-        return random.randint(0, 200)  # Simulated ADC value
+        return random.randint(0, 10)  # Simulated ADC value
 
+def simulate_fsr():
+    """Simulate FSR values in a separate thread."""
+    while True:
+        fsr_values['left'] = read_adc(FSR_CHANNEL_LEFT)
+        fsr_values['right'] = read_adc(FSR_CHANNEL_RIGHT)
+        time.sleep(FSR_SIMULATION_RATE)  # Delay in simulation (non-blocking)
+
+# Start the simulation in a separate thread
+if fsr_simulation_mode:
+    fsr_thread = threading.Thread(target=simulate_fsr)
+    fsr_thread.daemon = True  # Daemonize the thread to exit when the main program exits
+    fsr_thread.start()
 
 def get_fsr_values():
-    """Read and return FSR values for both left and right channels."""
-    fsr_value_left = read_adc(FSR_CHANNEL_LEFT)
-    fsr_value_right = read_adc(FSR_CHANNEL_RIGHT)
-    return fsr_value_left, fsr_value_right
+    """Get the latest FSR values."""
+    return fsr_values['left'], fsr_values['right']
