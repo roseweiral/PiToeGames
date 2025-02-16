@@ -53,4 +53,5 @@ if fsr_simulation_mode:
 
 def get_fsr_values():
     """Get the latest FSR values."""
+    print(f"FSR values: {fsr_values}")
     return fsr_values['left'], fsr_values['right']
