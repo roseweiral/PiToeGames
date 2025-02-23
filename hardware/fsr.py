@@ -8,7 +8,7 @@ FSR_CHANNEL_RIGHT = 1  # FSR connected to CH1 for right movement
 FSR_THRESHOLD = 100  # Sensitivity threshold for FSRs
 
 # Initialize ADS1115 ADC
-adc = ADS1115()
+adc = ADS1115(busnum=1)
 GAIN = 1  # You can adjust the gain if needed
 
 # Shared variable for storing FSR readings
