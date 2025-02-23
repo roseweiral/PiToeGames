@@ -30,10 +30,10 @@ def simulate_fsr():
         fsr_values['right'] = read_adc(FSR_CHANNEL_RIGHT)
         
         # Output the values for debugging or game logic
-        print(f"FSR values: Left={fsr_values['left']}, Right={fsr_values['right']}")
+        #print(f"FSR values: Left={fsr_values['left']}, Right={fsr_values['right']}")
         
         # Sleep for a short time to avoid flooding the console
-        time.sleep(0.1)
+        #time.sleep(0.1)
 
 # Start the simulation in a separate thread
 fsr_thread = threading.Thread(target=simulate_fsr)
@@ -58,13 +58,14 @@ while True:
     # Get the current values from the FSRs
     left, right = get_fsr_values()
 
+    """
     # Check if either left or right FSR has been pressed
     if is_left_pressed():
         print("Left FSR pressed!")
     
     if is_right_pressed():
         print("Right FSR pressed!")
-    
+    """
     # Implement the logic for game control based on FSR values here
     # (e.g., move a character or trigger an event)
     
