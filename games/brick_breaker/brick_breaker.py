@@ -5,7 +5,7 @@ from time import sleep
 
 #from ...modules.event_logging import handle_fsr_data
 from modules.event_logging import handle_fsr_data
-from hardware.fsr import get_fsr_values, read_adc, FSR_CHANNEL_LEFT, FSR_CHANNEL_RIGHT, FSR_THRESHOLD
+from hardware.archive.fsr_initial_ads115 import get_fsr_values, read_adc, FSR_CHANNEL_LEFT, FSR_CHANNEL_RIGHT, FSR_THRESHOLD
 from modules.bb_media import Media, play_background_music, stop_background_music
 
 
@@ -46,8 +46,8 @@ def bb_game_setup():
     ball_speed_y = -4
 
     # Define the number of columns and rows for the bricks
-    rows = 1  # Number of rows for the rainbow effect
-    cols = 2  # Number of bricks per row
+    rows = 7  # Number of rows for the rainbow effect
+    cols = 5  # Number of bricks per row
 
     # Bricks - Create bricks in a grid with a rainbow color scheme
     bricks = [
@@ -58,7 +58,7 @@ def bb_game_setup():
     # Score and lives
     global score, lives
     score = 0
-    lives = 3
+    lives = 10
 
     # Dynamic bat toggle
     dynamic_bat = False
