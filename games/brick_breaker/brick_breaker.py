@@ -5,7 +5,7 @@ from time import sleep
 
 #from ...modules.event_logging import handle_fsr_data
 from modules.event_logging import handle_fsr_data
-from hardware.archive.fsr_initial_ads115 import get_fsr_values, read_adc, FSR_CHANNEL_LEFT, FSR_CHANNEL_RIGHT, FSR_THRESHOLD
+from hardware.fsr import get_fsr_values, read_adc, FSR_CHANNEL_LEFT, FSR_CHANNEL_RIGHT, FSR_THRESHOLD
 from modules.bb_media import Media, play_background_music, stop_background_music
 
 
