@@ -58,7 +58,7 @@ def bb_game_setup():
     # Score and lives
     global score, lives
     score = 0
-    lives = 10
+    lives = 3
 
     # Dynamic bat toggle
     dynamic_bat = False
